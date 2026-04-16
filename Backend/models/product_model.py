@@ -5,4 +5,4 @@ class Product(BaseModel):
     name : str
     category : str
     price : float
-    sku : str
+    sku : str # stock keeping unit
