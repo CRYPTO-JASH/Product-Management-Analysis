@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from routes.prediction_routes import router as prediction_router
 from routes.product_routes import router as product_router
 from routes.sales_routes import router as sales_router
+from models.database import engine, Base
+
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title = "Product Management Analysis")
 
