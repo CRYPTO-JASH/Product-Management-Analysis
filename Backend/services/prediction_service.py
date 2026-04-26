@@ -20,7 +20,7 @@ def get_all_predictions(db):
 
     for p in products:
         # dummy prediction (replace later)
-        predicted = p["stock"] * 1.2
+        predicted = p["stock"] * 0.8 + 20
 
         result.append({
             "product": p["name"],
