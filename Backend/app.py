@@ -3,10 +3,19 @@ from routes.prediction_routes import router as prediction_router
 from routes.product_routes import router as product_router
 from routes.sales_routes import router as sales_router
 from models.database import engine, Base
+from fastapi.middleware.cors import CORSMiddleware
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title = "Product Management Analysis")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # allow frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def home():
