@@ -1,30 +1,52 @@
-from fastapi import APIRouter, UploadFile, File
-import pandas as pd
-import io
-from services.sales_service import add_sale, get_sales
-from models.sales_model import SalesData
+from fastapi import APIRouter, UploadFile, File, Depends
+from sqlalchemy.orm import Session
+from models.database import SessionLocal
+from models.sales_model import SalesDB
+import csv
+from io import StringIO
+from datetime import datetime
 
-router = APIRouter()
+router = APIRouter(prefix="/api/sales", tags=["Sales"])
 
+
+# DB Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+
+# ✅ Upload CSV
 @router.post("/")
-def upload_sales(file: UploadFile = File(...)):
-    
-    contents = file.file.read()
-    df = pd.read_csv(io.StringIO(contents.decode("utf-8")))
+async def upload_sales(file: UploadFile = File(...), db: Session = Depends(get_db)):
 
-    data = df.to_dict(orient="records")
+    contents = await file.read()
 
-    for row in data:
-        sale = SalesData(**row)   # convert dict → model
-        add_sale(sale)
+    decoded = contents.decode("utf-8")
+    csv_reader = csv.DictReader(StringIO(decoded))
+
+    count = 0
+
+    for row in csv_reader:
+        sale = SalesDB(
+            product_id=int(row["product_id"]),
+            quantity=int(row["quantity"]),
+            sale_date=datetime.strptime(row["sale_date"], "%Y-%m-%d"),
+            discount=float(row.get("discount", 0))
+        )
+        db.add(sale)
+        count += 1
+
+    db.commit()
 
     return {
-        "message": f"Successfully uploaded {len(data)} sales records.",
-        "rows": len(data),
-        "preview": data[:5]
+        "message": f"Uploaded {count} sales records"
     }
 
 
+# ✅ Get all sales
 @router.get("/")
-def fetch_sales():
-    return get_sales()
+def get_sales(db: Session = Depends(get_db)):
+    return db.query(SalesDB).all()

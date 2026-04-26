@@ -26,6 +26,6 @@ def home():
 
 app.include_router(prediction_router, prefix="/api/predictions", tags=["predictions"])
 app.include_router(product_router, prefix="/api/products", tags=["products"])
-app.include_router(sales_router , prefix="/api/sales", tags=["sales"])
+app.include_router(sales_router)
 app.include_router(color_router, prefix="/api/colors", tags=["colors"])
 app.include_router(trending_router, prefix="/api/trending", tags=["trending"])
