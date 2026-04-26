@@ -1,9 +1,6 @@
 from models.product_db import ProductDB
-from models.database import SessionLocal
 
-
-def create_product(product):
-    db = SessionLocal()
+def create_product(product, db):
 
     db_product = ProductDB(
         name=product.name,
@@ -18,8 +15,6 @@ def create_product(product):
     db.commit()
     db.refresh(db_product)
 
-    db.close()
-
     return {
         "id": db_product.id,
         "name": db_product.name,
@@ -30,9 +25,8 @@ def create_product(product):
         "color_hex": db_product.color_hex
     }
 
+def get_products(db):
 
-def get_products():
-    db = SessionLocal()
     products = db.query(ProductDB).all()
 
     result = []
@@ -48,5 +42,4 @@ def get_products():
             "color_hex": p.color_hex
         })
 
-    db.close()
     return result
