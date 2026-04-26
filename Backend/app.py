@@ -7,6 +7,7 @@ from routes.trending_routes import router as trending_router
 from routes.inventory_routes import router as inventory_router
 from routes.analytics_routes import router as analytics_router
 from routes.chart_routes import router as chart_router
+from routes.seasonal_routes import router as seasonal_router
 from models.database import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -35,3 +36,4 @@ app.include_router(trending_router)
 app.include_router(inventory_router)
 app.include_router(analytics_router)
 app.include_router(chart_router)
+app.include_router(seasonal_router)
