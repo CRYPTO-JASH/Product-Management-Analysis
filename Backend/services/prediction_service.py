@@ -1,16 +1,59 @@
-from ml.predict import predict_demand
+from models.sales_model import SalesDB
 from services.product_service import get_products
+from sqlalchemy import extract
+from datetime import datetime
 
-def get_prediction(product_id: int, db):
 
-    result = predict_demand(product_id, db)
+def get_product_sales(db, product_id):
+    return (
+        db.query(SalesDB)
+        .filter(SalesDB.product_id == product_id)
+        .all()
+    )
 
-    return {
-        "product_id": product_id,
-        "predicted_demand": result["predicted_demand"],
-        "average_sales": result["average_sales"],
-        "trend": result["trend"]
-    }
+
+def calculate_prediction(sales):
+
+    if not sales:
+        return 0, "no data", 50
+
+    # split recent vs older
+    recent = []
+    older = []
+
+    current_month = datetime.now().month
+
+    for s in sales:
+        if abs(current_month - s.sale_date.month) <= 2:
+            recent.append(s.quantity)
+        else:
+            older.append(s.quantity)
+
+    recent_avg = sum(recent) / len(recent) if recent else 0
+    older_avg = sum(older) / len(older) if older else 0
+
+    # prediction = weighted average
+    predicted = (0.7 * recent_avg) + (0.3 * older_avg)
+
+    # trend detection
+    if recent_avg > older_avg:
+        trend = "up"
+    elif recent_avg < older_avg:
+        trend = "down"
+    else:
+        trend = "flat"
+
+    # confidence
+    total_points = len(sales)
+
+    if total_points > 10:
+        confidence = 90
+    elif total_points > 5:
+        confidence = 75
+    else:
+        confidence = 60
+
+    return int(predicted), trend, confidence
 
 
 def get_all_predictions(db):
@@ -19,15 +62,18 @@ def get_all_predictions(db):
     result = []
 
     for p in products:
-        # dummy prediction (replace later)
-        predicted = p["stock"] * 0.8 + 20
+        sales = get_product_sales(db, p["id"])
+
+        predicted, trend, confidence = calculate_prediction(sales)
+
+        suggested_stock = int(predicted * 1.2)
 
         result.append({
             "product": p["name"],
             "predicted_demand": predicted,
-            "confidence": 80,
-            "suggested_stock": int(predicted * 1.2),
-            "trend": "up"
+            "confidence": confidence,
+            "suggested_stock": suggested_stock,
+            "trend": trend
         })
 
     return result

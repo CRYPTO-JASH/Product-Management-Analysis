@@ -27,7 +27,7 @@ def home():
     
     return {"message": "Welcome to the Product Management Analysis API!"}
 
-app.include_router(prediction_router, prefix="/api/predictions", tags=["predictions"])
+app.include_router(prediction_router)
 app.include_router(product_router)
 app.include_router(sales_router)
 app.include_router(color_router, prefix="/api/colors", tags=["colors"])

@@ -1,14 +1,19 @@
-from fastapi import APIRouter
-from services.prediction_service import get_prediction, get_all_predictions
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from models.database import SessionLocal
+from services.prediction_service import get_all_predictions
 
-router = APIRouter()
+router = APIRouter(prefix="/api/predictions", tags=["Predictions"])
 
 
-@router.get("/{product_id}")
-def predict_single(product_id: int):
-    return get_prediction(product_id)
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 @router.get("/")
-def predict_all():
-    return get_all_predictions()
+def get_predictions(db: Session = Depends(get_db)):
+    return get_all_predictions(db)
