@@ -13,7 +13,7 @@ app = FastAPI(title = "Product Management Analysis")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # allow frontend
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

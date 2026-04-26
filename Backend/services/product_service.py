@@ -1,15 +1,17 @@
+from models.product_db import ProductDB
 from models.database import SessionLocal
-from models.product_model import ProductDB
+
 
 def create_product(product):
     db = SessionLocal()
 
     db_product = ProductDB(
-        id=product.id,
         name=product.name,
         category=product.category,
         price=product.price,
-        sku=product.sku
+        sku=product.sku,
+        stock=product.stock,
+        color_hex=product.color_hex
     )
 
     db.add(db_product)
@@ -18,11 +20,33 @@ def create_product(product):
 
     db.close()
 
-    return db_product
+    return {
+        "id": db_product.id,
+        "name": db_product.name,
+        "category": db_product.category,
+        "price": db_product.price,
+        "sku": db_product.sku,
+        "stock": db_product.stock,
+        "color_hex": db_product.color_hex
+    }
 
 
 def get_products():
     db = SessionLocal()
     products = db.query(ProductDB).all()
+
+    result = []
+
+    for p in products:
+        result.append({
+            "id": p.id,
+            "name": p.name,
+            "category": p.category,
+            "price": p.price,
+            "sku": p.sku,
+            "stock": p.stock,
+            "color_hex": p.color_hex
+        })
+
     db.close()
-    return products
+    return result
