@@ -26,7 +26,6 @@ def create_product(product, db):
     }
 
 def get_products(db):
-
     products = db.query(ProductDB).all()
 
     result = []

@@ -14,23 +14,20 @@ def get_prediction(product_id: int, db):
 
 
 def get_all_predictions(db):
-
     products = get_products(db)
 
     result = []
 
     for p in products:
-        pred = get_prediction(p.id, db)
+        # dummy prediction (replace later)
+        predicted = p["stock"] * 1.2
 
         result.append({
-            "product": {
-                "name": p.name,
-                "sku": p.sku
-            },
-            "predicted_demand": pred["predicted_demand"],
+            "product": p["name"],
+            "predicted_demand": predicted,
             "confidence": 80,
-            "suggested_stock": int(pred["predicted_demand"] * 1.25),
-            "trend": pred["trend"]
+            "suggested_stock": int(predicted * 1.2),
+            "trend": "up"
         })
 
     return result
