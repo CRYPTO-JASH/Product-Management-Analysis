@@ -5,6 +5,7 @@ from routes.sales_routes import router as sales_router
 from routes.color_routes import router as color_router  
 from routes.trending_routes import router as trending_router
 from routes.inventory_routes import router as inventory_router
+from routes.analytics_routes import router as analytics_router
 from models.database import engine, Base
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -31,3 +32,4 @@ app.include_router(sales_router)
 app.include_router(color_router, prefix="/api/colors", tags=["colors"])
 app.include_router(trending_router)
 app.include_router(inventory_router)
+app.include_router(analytics_router)
