@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Query
-from services.color_service import get_colors
+from services.color_service import get_colors, get_shades
 
 router = APIRouter()
 
@@ -11,3 +11,7 @@ def fetch_colors(type: str = Query(None)):
         colors = [c for c in colors if c["type"].lower() == type.lower()]
     
     return colors
+
+@router.get("/shades")
+def fetch_shades():
+    return get_shades()
