@@ -1,11 +1,38 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabaseClient'
 import logo from '../assets/logo.png'
 
 const PALETTE = ['#C65A3A','#8AA89F','#F4ECDD','#9E9189','#2E2E2E','#C99A3B','#3D6B4F','#D4A090']
 
 export default function Login() {
+  const navigate = useNavigate()
 
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [errorMsg, setErrorMsg] = useState('')
+
+  // 🔥 EMAIL LOGIN
+  const handleEmailLogin = async () => {
+    setLoading(true)
+    setErrorMsg('')
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    })
+
+    setLoading(false)
+
+    if (error) {
+      setErrorMsg(error.message)
+    } else {
+      navigate('/dashboard')
+    }
+  }
+
+  // 🔥 GOOGLE LOGIN
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -19,7 +46,7 @@ export default function Login() {
   return (
     <div style={{ display:'flex', minHeight:'100vh', background:'var(--ivory)' }}>
       
-      {/* LEFT */}
+      {/* LEFT PANEL */}
       <div style={{
         width:'45%',
         background:'linear-gradient(145deg,#EDE3D0 0%,#F4ECDD 60%,#FAEEE5 100%)',
@@ -54,22 +81,61 @@ export default function Login() {
         </div>
       </div>
 
-      {/* RIGHT */}
+      {/* RIGHT PANEL */}
       <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ width:'400px' }}>
 
           <h2 style={{ fontSize:'36px' }}>Sign in</h2>
-          <p>Welcome back. Your forecasts are waiting.</p>
+          <p style={{ marginBottom:'20px' }}>
+            Welcome back. Your forecasts are waiting.
+          </p>
 
-          <button onClick={handleGoogleLogin} style={{
-            width:'100%',
-            padding:'14px',
-            marginTop:'20px',
-            borderRadius:'50px',
-            border:'1px solid #ddd',
-            background:'#fff',
-            cursor:'pointer'
+          {/* EMAIL INPUT */}
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            style={inputStyle}
+          />
+
+          {/* PASSWORD INPUT */}
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            style={inputStyle}
+          />
+
+          {/* ERROR */}
+          {errorMsg && (
+            <p style={{ color:'red', fontSize:'13px' }}>
+              {errorMsg}
+            </p>
+          )}
+
+          {/* EMAIL LOGIN BUTTON */}
+          <button
+            onClick={handleEmailLogin}
+            disabled={loading}
+            style={btnPrimary}
+          >
+            {loading ? "Signing in..." : "Sign in"}
+          </button>
+
+          {/* DIVIDER */}
+          <div style={{
+            textAlign:'center',
+            margin:'20px 0',
+            color:'#999',
+            fontSize:'14px'
           }}>
+            — or —
+          </div>
+
+          {/* GOOGLE LOGIN */}
+          <button onClick={handleGoogleLogin} style={googleBtn}>
             Continue with Google
           </button>
 
@@ -77,4 +143,33 @@ export default function Login() {
       </div>
     </div>
   )
+}
+
+const inputStyle = {
+  width:'100%',
+  padding:'14px',
+  marginBottom:'12px',
+  borderRadius:'10px',
+  border:'1px solid #ccc'
+}
+
+const btnPrimary = {
+  width:'100%',
+  padding:'14px',
+  borderRadius:'50px',
+  background:'var(--terracotta)',
+  color:'#fff',
+  border:'none',
+  cursor:'pointer',
+  marginTop:'10px'
+}
+
+const googleBtn = {
+  width:'100%',
+  padding:'14px',
+  borderRadius:'50px',
+  border:'1px solid #ddd',
+  background:'#fff',
+  cursor:'pointer',
+  fontWeight:500
 }
