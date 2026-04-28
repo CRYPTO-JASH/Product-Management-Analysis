@@ -25,16 +25,5 @@ export default function App() {
     }
   }, [])
 
-  return (
-    <>
-      {/* optional debug UI */}
-      {user && (
-        <div style={{ position:'fixed', top:10, right:10, zIndex:999 }}>
-          Logged in: {user.email}
-        </div>
-      )}
-
-      <AppRoutes />
-    </>
-  )
+  return <AppRoutes />
 }

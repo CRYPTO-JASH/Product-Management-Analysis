@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext.jsx'
+import { useAuth } from "../context/AuthContext.jsx";
 import { supabase } from '../services/supabaseClient'
+import logo from '../assets/logo.png'
 
 const PALETTE = ['#C65A3A','#8AA89F','#F4ECDD','#9E9189','#2E2E2E','#C99A3B','#3D6B4F','#D4A090']
 
@@ -21,22 +22,20 @@ export default function Login() {
     navigate('/customer/shades')
   }
 
-  // 🔥 GOOGLE LOGIN
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'http://localhost:5173/dashboard', // change later for production
+        redirectTo: 'http://localhost:5173/dashboard',
       },
     })
-
     if (error) console.log(error.message)
   }
 
   return (
     <div style={{ display:'flex', minHeight:'100vh', background:'var(--ivory)' }}>
       
-      {/* LEFT PANEL (unchanged) */}
+      {/* LEFT PANEL */}
       <div style={{
         width:'45%', minHeight:'100vh',
         background:'linear-gradient(145deg,#EDE3D0 0%,#F4ECDD 60%,#FAEEE5 100%)',
@@ -49,27 +48,44 @@ export default function Login() {
           background:'radial-gradient(circle,rgba(198,90,58,0.12) 0%,transparent 70%)',
           borderRadius:'50%' }} />
 
+        {/* 🔥 LOGO (FIXED) */}
         <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
-          <div style={{
-            width:'48px', height:'48px', borderRadius:'50%',
-            background:'var(--terracotta)',
-            display:'flex', alignItems:'center', justifyContent:'center',
-            color:'#fff', fontWeight:700
-          }}>P</div>
+          <img
+            src={logo}
+            alt="Pigment"
+            style={{
+              width:'50px',
+              height:'50px',
+              objectFit:'contain'
+            }}
+          />
           <div>
             <div style={{ fontSize:'22px', fontWeight:600 }}>Pigment</div>
-            <div style={{ fontSize:'11px', letterSpacing:'2px' }}>Demand Studio</div>
+            <div style={{ fontSize:'11px', letterSpacing:'2px' }}>
+              Demand Studio
+            </div>
           </div>
         </div>
 
         <div>
-          <h1>Predict the next shade before the market does.</h1>
+          <h1 style={{
+            fontFamily:'Playfair Display,serif',
+            fontSize:'42px',
+            lineHeight:1.2
+          }}>
+            Predict the next shade before the market does.
+          </h1>
         </div>
 
         <div>
           <div style={{ display:'flex', gap:'10px' }}>
             {PALETTE.map(c => (
-              <div key={c} style={{ width:'52px', height:'52px', background:c }} />
+              <div key={c} style={{
+                width:'52px',
+                height:'52px',
+                background:c,
+                borderRadius:'10px'
+              }} />
             ))}
           </div>
         </div>
@@ -79,32 +95,58 @@ export default function Login() {
       <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}>
         <div style={{ width:'100%', maxWidth:'440px' }}>
 
-          <h2>Sign in</h2>
+          <h2 style={{
+            fontFamily:'Playfair Display,serif',
+            fontSize:'36px',
+            marginBottom:'10px'
+          }}>
+            Sign in
+          </h2>
 
-          <input value={email} onChange={e => setEmail(e.target.value)} />
-          <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+          <p style={{ color:'var(--text-secondary)', marginBottom:'30px' }}>
+            Welcome back. Your forecasts are waiting.
+          </p>
 
-          <button onClick={handleRetailer}>
+          <input
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            style={inputStyle}
+            placeholder="Email"
+          />
+
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            style={inputStyle}
+            placeholder="Password"
+          />
+
+          <button onClick={handleRetailer} style={btnPrimary}>
             Sign in as Retailer
           </button>
 
-          <button onClick={handleCustomer}>
+          <button onClick={handleCustomer} style={btnSecondary}>
             Continue as Customer
           </button>
 
-          {/* 🔥 NEW GOOGLE BUTTON */}
-          <button 
-            onClick={handleGoogleLogin}
-            style={{
-              marginTop:'20px',
-              padding:'14px',
-              width:'100%',
-              borderRadius:'50px',
-              border:'1px solid #ccc',
-              background:'#fff',
-              cursor:'pointer'
-            }}
-          >
+          {/* DIVIDER */}
+          <div style={{
+            textAlign:'center',
+            margin:'20px 0',
+            color:'#999',
+            fontSize:'14px'
+          }}>
+            — or —
+          </div>
+
+          {/* GOOGLE LOGIN */}
+          <button onClick={handleGoogleLogin} style={googleBtn}>
+            <img
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="google"
+              style={{ width:'20px', marginRight:'10px' }}
+            />
             Continue with Google
           </button>
 
@@ -112,4 +154,45 @@ export default function Login() {
       </div>
     </div>
   )
+}
+
+const inputStyle = {
+  width:'100%',
+  padding:'14px',
+  marginBottom:'15px',
+  borderRadius:'10px',
+  border:'1px solid #ccc'
+}
+
+const btnPrimary = {
+  width:'100%',
+  padding:'14px',
+  marginBottom:'10px',
+  borderRadius:'50px',
+  background:'var(--terracotta)',
+  color:'#fff',
+  border:'none',
+  cursor:'pointer'
+}
+
+const btnSecondary = {
+  width:'100%',
+  padding:'14px',
+  borderRadius:'50px',
+  border:'1px solid #ccc',
+  background:'transparent',
+  cursor:'pointer'
+}
+
+const googleBtn = {
+  width:'100%',
+  padding:'14px',
+  borderRadius:'50px',
+  border:'1px solid #ddd',
+  background:'#fff',
+  cursor:'pointer',
+  display:'flex',
+  alignItems:'center',
+  justifyContent:'center',
+  fontWeight:500
 }
