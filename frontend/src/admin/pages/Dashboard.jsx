@@ -1,7 +1,12 @@
 import React from 'react'
 import PageHeader from '../../components/PageHeader.jsx'
 import KPICard from '../components/KPICard.jsx'
-import { DemandTrendsChart, TopPaintColors, SeasonalHeatmap, InventoryRiskChart } from '../components/Charts.jsx'
+import {
+  DemandTrendsChart,
+  TopPaintColors,
+  SeasonalHeatmap,
+  InventoryRiskChart
+} from '../components/Charts.jsx'
 import { useAuth } from "../../context/AuthContext"
 
 export default function Dashboard() {
@@ -26,41 +31,42 @@ export default function Dashboard() {
       : 6
 
   return (
-    <div style={{ flex:1, overflowY:'auto', padding:'0' }}>
-      <PageHeader title="Studio Overview" subtitle="Demand pulse across every shade in your catalogue" />
+    <div style={{ flex:1, overflowY:'auto' }}>
+
+      {/* 🔥 HEADER */}
+      <PageHeader
+        title="Studio Overview"
+        subtitle="Demand pulse across every shade in your catalogue"
+      />
 
       <div style={{ padding:'32px' }}>
 
-        {/* 🔥 CLEAN UPLOAD UI */}
+        {/* 🔥 UPLOAD SECTION */}
         <div
           style={{
             border: "1px dashed var(--border)",
-            borderRadius: "16px",
-            padding: "24px",
+            borderRadius: "20px",
+            padding: "32px",
             textAlign: "center",
             background: "var(--bg-card)",
-            marginBottom: "24px",
+            marginBottom: "28px",
           }}
         >
-          <p style={{
-            fontSize: "16px",
-            fontWeight: "500",
-            marginBottom: "10px"
-          }}>
+          <p style={{ fontSize: "18px", fontWeight: "500", marginBottom: "10px" }}>
             Upload your sales dataset
           </p>
 
           <p style={{
             fontSize: "13px",
             color: "var(--text-secondary)",
-            marginBottom: "16px"
+            marginBottom: "18px"
           }}>
             CSV format: name, value, category, trend
           </p>
 
           <label
             style={{
-              padding: "10px 20px",
+              padding: "10px 24px",
               borderRadius: "50px",
               background: "var(--terracotta)",
               color: "#fff",
@@ -104,14 +110,21 @@ export default function Dashboard() {
           </label>
 
           {uploadedData.length > 0 && (
-            <p style={{ marginTop: "10px", fontSize: "12px", color: "green" }}>
+            <p style={{ marginTop: "12px", fontSize: "12px", color: "green" }}>
               File uploaded successfully ✅
             </p>
           )}
         </div>
 
-        {/* 🔥 ORIGINAL KPI CARDS */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px', marginBottom:'24px' }}>
+        {/* 🔥 KPI CARDS */}
+        <div
+          style={{
+            display:'grid',
+            gridTemplateColumns:'1fr 1fr',
+            gap:'20px',
+            marginBottom:'28px'
+          }}
+        >
           <KPICard
             label="Total Products"
             value={totalProducts}
@@ -152,13 +165,27 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* 🔥 CHARTS */}
-        <div style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:'20px', marginBottom:'24px' }}>
+        {/* 🔥 CHARTS ROW 1 */}
+        <div
+          style={{
+            display:'grid',
+            gridTemplateColumns:'1.6fr 1fr',
+            gap:'20px',
+            marginBottom:'28px'
+          }}
+        >
           <DemandTrendsChart data={data} />
           <TopPaintColors data={data} />
         </div>
 
-        <div style={{ display:'grid', gridTemplateColumns:'1.6fr 1fr', gap:'20px' }}>
+        {/* 🔥 CHARTS ROW 2 */}
+        <div
+          style={{
+            display:'grid',
+            gridTemplateColumns:'1.6fr 1fr',
+            gap:'20px'
+          }}
+        >
           <SeasonalHeatmap data={data} />
           <InventoryRiskChart data={data} />
         </div>

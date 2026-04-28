@@ -1,23 +1,26 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import AppRoutes from './routes/index.jsx'
-import { initializeGlobalErrorHandlers } from './services/errorHandling.js'
 import { supabase } from './services/supabaseClient'
+import { useAuth } from './context/AuthContext'
 
 export default function App() {
-  const [user, setUser] = useState(null)
+  const { loginWithSupabaseUser, logout } = useAuth()
 
   useEffect(() => {
-    // existing
-    initializeGlobalErrorHandlers()
-
-    // 🔥 get current user
-    supabase.auth.getUser().then(({ data }) => {
-      setUser(data.user)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        loginWithSupabaseUser(session.user)
+      } else {
+        logout()
+      }
     })
 
-    // 🔥 listen to login/logout
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      if (session?.user) {
+        loginWithSupabaseUser(session.user)
+      } else {
+        logout()
+      }
     })
 
     return () => {

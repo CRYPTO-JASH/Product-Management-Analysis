@@ -3,7 +3,6 @@ import React, { createContext, useContext, useState } from "react";
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  // 🔐 USER STATE
   const [user, setUser] = useState(() => {
     try {
       const stored = localStorage.getItem("pigment_user");
@@ -13,37 +12,35 @@ export function AuthProvider({ children }) {
     }
   });
 
-  // 🎨 THEME STATE
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem("theme") || "light";
     document.documentElement.setAttribute("data-theme", saved);
     return saved;
   });
 
-  // 🔥 NEW: GLOBAL UPLOADED DATA
   const [uploadedData, setUploadedData] = useState([]);
 
-  // 🔐 LOGIN
-  function login(role) {
+  function loginWithSupabaseUser(supabaseUser) {
+    if (!supabaseUser) {
+      logout();
+      return;
+    }
+
     const u = {
-      role,
-      name: role === "RETAILER" ? "Manager" : "Guest",
-      email:
-        role === "RETAILER"
-          ? "manager@pigment.studio"
-          : "guest@pigment.studio",
+      role: "RETAILER",
+      name: supabaseUser.user_metadata?.name || supabaseUser.email || "User",
+      email: supabaseUser.email,
     };
+
     localStorage.setItem("pigment_user", JSON.stringify(u));
     setUser(u);
   }
 
-  // 🔐 LOGOUT
   function logout() {
     localStorage.removeItem("pigment_user");
     setUser(null);
   }
 
-  // 🎨 TOGGLE THEME
   function toggleTheme() {
     const next = theme === "light" ? "dark" : "light";
     localStorage.setItem("theme", next);
@@ -55,12 +52,12 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider
       value={{
         user,
-        login,
+        loginWithSupabaseUser,
         logout,
         theme,
         toggleTheme,
-        uploadedData,      // 🔥 expose data
-        setUploadedData,   // 🔥 expose setter
+        uploadedData,
+        setUploadedData,
       }}
     >
       {children}
@@ -68,7 +65,6 @@ export function AuthProvider({ children }) {
   );
 }
 
-// 🔁 HOOK
 export function useAuth() {
   return useContext(AuthContext);
 }
