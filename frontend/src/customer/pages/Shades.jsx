@@ -1,67 +1,92 @@
-import React, { useEffect, useState } from 'react'
-import ShadeCard from '../components/ShadeCard.jsx'
-import SearchBar from '../components/SearchBar.jsx'
-import { getShades } from '../../services/api.js'
+import React from "react";
+import { useAuth } from "../../context/AuthContext";
 
-const FAMILIES = ['All', 'Warm', 'Cool', 'Neutral', 'Dark']
+// 🔥 same color generator (backup)
+function stringToColor(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = "#";
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 255;
+    color += ("00" + value.toString(16)).slice(-2);
+  }
+
+  return color;
+}
 
 export default function Shades() {
-  const [shades, setShades] = useState([])
-  const [search, setSearch] = useState('')
-  const [family, setFamily] = useState('All')
+  const { uploadedData } = useAuth();
 
-  useEffect(() => { getShades().then(setShades) }, [])
+  const shades = uploadedData
+    .filter(item => item.name && item.name.trim() !== "")
+    .map((item, i) => ({
+      id: i,
+      name: item.name,
+      value: Number(item.value) || 0,
+      trend: item.trend || "Normal",
 
-  const filtered = shades.filter(s => {
-    const matchSearch = s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.mood.toLowerCase().includes(search.toLowerCase())
-    const matchFamily = family === 'All' || s.family === family
-    return matchSearch && matchFamily
-  })
+      hex: item.hex && item.hex.startsWith("#")
+        ? item.hex
+        : stringToColor(item.name)
+    }));
+
+  // 🔥 sort by demand (for demo “trending” feel)
+  const sorted = [...shades].sort((a, b) => b.value - a.value);
 
   return (
-    <div style={{ padding:'40px' }}>
-      {/* Header */}
-      <div style={{ marginBottom:'32px' }}>
-        <h1 style={{ fontFamily:'Playfair Display,serif', fontSize:'36px', fontWeight:700, marginBottom:'8px' }}>All Shades</h1>
-        <p style={{ color:'var(--text-secondary)', fontSize:'15px' }}>Browse the complete Pigment colour collection.</p>
-      </div>
+    <div style={{ padding: "32px" }}>
 
-      {/* Filters */}
-      <div style={{ display:'flex', gap:'16px', alignItems:'center', marginBottom:'32px', flexWrap:'wrap' }}>
-        <div style={{ flex:1, minWidth:'260px' }}>
-          <SearchBar onSearch={setSearch} />
-        </div>
-        <div style={{ display:'flex', gap:'8px' }}>
-          {FAMILIES.map(f => (
-            <button key={f} onClick={() => setFamily(f)} style={{
-              padding:'10px 20px', borderRadius:'50px', border:'1.5px solid',
-              borderColor: family === f ? 'var(--terracotta)' : 'var(--border)',
-              background: family === f ? 'var(--terracotta)' : 'var(--bg-card)',
-              color: family === f ? '#fff' : 'var(--text-secondary)',
-              fontSize:'13px', fontWeight:500, cursor:'pointer', transition:'all 0.15s',
-            }}>{f}</button>
-          ))}
-        </div>
-      </div>
+      <h1 style={{ fontSize: "28px", marginBottom: "20px" }}>
+        Explore Shades
+      </h1>
 
-      {/* Count */}
-      <p style={{ fontSize:'13px', color:'var(--text-muted)', marginBottom:'20px' }}>
-        Showing {filtered.length} shade{filtered.length !== 1 ? 's' : ''}
-      </p>
-
-      {/* Grid */}
-      {filtered.length === 0 ? (
-        <div style={{ textAlign:'center', padding:'80px', color:'var(--text-muted)' }}>
-          <p style={{ fontSize:'40px', marginBottom:'12px' }}>🎨</p>
-          <p style={{ fontSize:'18px', fontWeight:500 }}>No shades match your search.</p>
-          <p style={{ fontSize:'14px', marginTop:'6px' }}>Try a different name or mood.</p>
-        </div>
+      {sorted.length === 0 ? (
+        <p>No data available. Ask retailer to upload CSV.</p>
       ) : (
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))', gap:'20px' }}>
-          {filtered.map(s => <ShadeCard key={s.id} shade={s} />)}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+          gap: "20px"
+        }}>
+          {sorted.map((shade) => (
+            <div key={shade.id} style={{
+              border: "1px solid var(--border)",
+              borderRadius: "16px",
+              padding: "16px",
+              background: "var(--bg-card)"
+            }}>
+              
+              <div style={{
+                width: "100%",
+                height: "80px",
+                borderRadius: "12px",
+                background: shade.hex,
+                marginBottom: "12px"
+              }} />
+
+              <div style={{ fontWeight: 600 }}>
+                {shade.name}
+              </div>
+
+              <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                {shade.hex}
+              </div>
+
+              <div style={{
+                marginTop: "8px",
+                fontSize: "12px",
+                color: shade.value > 150 ? "green" : "orange"
+              }}>
+                {shade.value > 150 ? "🔥 Trending" : "• Normal"}
+              </div>
+
+            </div>
+          ))}
         </div>
       )}
     </div>
-  )
+  );
 }
