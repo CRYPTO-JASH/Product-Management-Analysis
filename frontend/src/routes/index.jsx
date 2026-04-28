@@ -10,9 +10,11 @@ import Predictions from '../admin/pages/Predictions.jsx'
 import Reports from '../admin/pages/Reports.jsx'
 import Settings from '../admin/pages/Settings.jsx'
 import Home from '../customer/pages/Home.jsx'
-import Shades from '../customer/pages/Shades.jsx'
 import ShadeDetails from '../customer/pages/ShadeDetails.jsx'
 import Trending from '../customer/pages/Trending.jsx'
+import Shades from '../customer/pages/Shades.jsx'
+
+
 
 export default function AppRoutes() {
   const { user } = useAuth()

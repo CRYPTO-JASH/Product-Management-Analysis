@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext";
 
-// 🔥 same color generator (backup)
+// 🔥 AUTO COLOR GENERATOR
 function stringToColor(str) {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
@@ -33,18 +33,16 @@ export default function Shades() {
         : stringToColor(item.name)
     }));
 
-  // 🔥 sort by demand (for demo “trending” feel)
   const sorted = [...shades].sort((a, b) => b.value - a.value);
 
   return (
     <div style={{ padding: "32px" }}>
-
       <h1 style={{ fontSize: "28px", marginBottom: "20px" }}>
         Explore Shades
       </h1>
 
       {sorted.length === 0 ? (
-        <p>No data available. Ask retailer to upload CSV.</p>
+        <p>No data available. Upload CSV from retailer side.</p>
       ) : (
         <div style={{
           display: "grid",
