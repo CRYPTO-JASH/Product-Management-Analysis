@@ -10,19 +10,25 @@ export default function CSVUploader({ setData }) {
       header: true,
       skipEmptyLines: true,
       complete: function (results) {
-        let parsedData = results.data;
 
-        // Convert numbers properly
-        parsedData = parsedData.map((row) => {
-          const newRow = {};
-          for (let key in row) {
-            const value = row[key];
-            newRow[key] = isNaN(value) ? value : Number(value);
-          }
-          return newRow;
+        const parsedData = results.data.map((row) => {
+
+          // 🔥 TRIM ALL KEYS (THIS FIXES YOUR ISSUE)
+          const cleanRow = {};
+          Object.keys(row).forEach(key => {
+            cleanRow[key.trim().toLowerCase()] = row[key];
+          });
+
+          return {
+            name: cleanRow.name || "Unknown",
+            value: Number(cleanRow.value) || 0,
+            category: cleanRow.category || "-",
+            trend: cleanRow.trend || "-",
+            hex: cleanRow.hex || "#ccc"
+          };
         });
 
-        console.log("FINAL DATA:", parsedData); // 🔥 IMPORTANT
+        console.log("FINAL DATA:", parsedData);
         setData(parsedData);
       },
     });

@@ -3,23 +3,54 @@ import PageHeader from '../../components/PageHeader.jsx'
 import ProductTable from '../components/ProductTable.jsx'
 import { useAuth } from "../../context/AuthContext"
 
+// 🔥 AUTO COLOR GENERATOR
+function stringToColor(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = "#";
+  for (let i = 0; i < 3; i++) {
+    const value = (hash >> (i * 8)) & 255;
+    color += ("00" + value.toString(16)).slice(-2);
+  }
+
+  return color;
+}
+
 export default function Products() {
   const { uploadedData } = useAuth()
 
-  // 🔥 Convert CSV → product format (FIXED)
-  const products = uploadedData.map((item, i) => ({
-    id: i,
-    name: item.name,
-    hex: "#C65A3A", // you can improve later
-    sku: `SKU-${i + 1}`,
-    category: item.category,
-    stock: Number(item.value),
+  // ✅ REMOVE BAD / EMPTY ROWS
+  const cleanedData = uploadedData.filter(item =>
+    item.name &&
+    item.name.trim() !== "" &&
+    !item.name.startsWith("#")
+  )
 
-    // ✅ FIX: proper risk logic
-    status: Number(item.value) < 100 ? 'risk' : 'in_stock'
-  }))
+  const products = cleanedData.map((item, i) => {
+    const value = Number(item.value) || 0
 
-  // ✅ FIX: correct risk count
+    return {
+      id: i,
+      name: item.name,
+
+      // ✅ USE CSV HEX OR GENERATE
+      hex: item.hex && item.hex.startsWith('#')
+        ? item.hex
+        : stringToColor(item.name),
+
+      sku: `SKU-${i + 1}`,
+      category: item.category || "-",
+
+      value: value,
+
+      // ✅ RISK FIX
+      status: value < 100 ? 'risk' : 'ok'
+    }
+  })
+
   const riskCount = products.filter(p => p.status === 'risk').length
 
   return (
@@ -28,7 +59,7 @@ export default function Products() {
 
       <div style={{ padding:'32px' }}>
 
-        {/* TOP CARDS (UNCHANGED UI) */}
+        {/* TOP CARDS */}
         <div style={{ display:'flex', gap:'16px', marginBottom:'24px' }}>
           
           <div style={{
