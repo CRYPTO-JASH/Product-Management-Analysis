@@ -34,14 +34,9 @@ const handleApiError = (error, endpoint) => {
 
 // ================= AUTH =================
 export const login = async (email, password) => {
-  try {
-    // TEMP MOCK
-    return {
-      role: email.includes("customer") ? "CUSTOMER" : "RETAILER",
-    };
-  } catch (error) {
-    handleApiError(error, "login");
-  }
+  return {
+    role: email.includes("customer") ? "CUSTOMER" : "RETAILER",
+  };
 };
 
 // ================= PRODUCTS =================
@@ -64,20 +59,17 @@ export const getProducts = async () => {
   }
 };
 
-// ================= PREDICTIONS =================
+// ================= PREDICTIONS (ARIMA LIVE) =================
 export const getPredictions = async () => {
   try {
     const res = await api.get("/predictions/");
 
     return res.data.map((p, index) => ({
-      id: p.product?.id ?? index,
-      name: p.product?.name ?? "Unknown",
-      hex: "#ccc", // optional: map real color later
+      id: index,
+      name: p.name || "Unknown",
       predicted: p.predicted_demand ?? 0,
       confidence: p.confidence ?? 80,
-      suggestedStock: p.suggested_stock ?? 0,
-      trend: formatTrend(p.trend),
-      trendDir: p.trend || "flat",
+      trend: p.trend || "flat",
     }));
   } catch (error) {
     handleApiError(error, "predictions");
@@ -95,8 +87,7 @@ export const getTrending = async () => {
       hex: t.color_hex || "#ccc",
       category: t.category,
       predicted: t.predicted_demand ?? 0,
-      trend: formatTrend(t.trend),
-      trendDir: t.trend || "flat",
+      trend: t.trend || "flat",
     }));
   } catch (error) {
     handleApiError(error, "trending");
@@ -128,16 +119,6 @@ export const getInventory = async () => {
   }
 };
 
-// ================= HEATMAP =================
-export const getHeatmap = async () => {
-  try {
-    const res = await api.get("/seasonal/heatmap");
-    return res.data;
-  } catch (error) {
-    handleApiError(error, "heatmap");
-  }
-};
-
 // ================= SALES =================
 export const getMonthlySales = async () => {
   try {
@@ -148,8 +129,7 @@ export const getMonthlySales = async () => {
   }
 };
 
-// ================= COLORS =================
-// (only keep if backend has this route)
+// ================= SHADES =================
 export const getShades = async () => {
   try {
     const res = await api.get("/colors/shades");
@@ -165,13 +145,6 @@ export const getShades = async () => {
   } catch (error) {
     handleApiError(error, "shades");
   }
-};
-
-// ================= HELPER =================
-const formatTrend = (trend) => {
-  if (trend === "up") return "+10%";
-  if (trend === "down") return "-5%";
-  return "0%";
 };
 
 export default api;

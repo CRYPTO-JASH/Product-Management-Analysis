@@ -1,129 +1,153 @@
-import React, { useState } from 'react'
-import PageHeader from '../../components/PageHeader.jsx'
-import { useAuth } from "../../context/AuthContext"
-import jsPDF from "jspdf"
+import React, { useEffect, useState } from "react"
+import axios from "axios"
+import PageHeader from "../../components/PageHeader.jsx"
 
 export default function Reports() {
-  const { uploadedData } = useAuth()
-  const [generating, setGenerating] = useState(null)
+  const [totalRecords, setTotalRecords] = useState(0)
+  const [totalDemand, setTotalDemand] = useState(0)
+  const [loading, setLoading] = useState(false)
 
-  function handleGenerate(type) {
-    if (!uploadedData.length) {
-      alert("Upload data first")
-      return
+  // 🔥 Fetch data for summary
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(
+          "http://127.0.0.1:8000/api/predictions"
+        )
+
+        setTotalRecords(res.data.length)
+
+        const demandSum = res.data.reduce(
+          (sum, item) => sum + (item.predicted_demand || 0),
+          0
+        )
+
+        setTotalDemand(demandSum)
+      } catch (err) {
+        console.error("Report data error:", err)
+      }
     }
 
-    setGenerating(type)
+    fetchData()
+  }, [])
 
-    setTimeout(() => {
-
-      // ✅ EXCEL EXPORT
-      if (type === "excel") {
-        const headers = Object.keys(uploadedData[0]).join(",")
-        const rows = uploadedData.map(obj =>
-          Object.values(obj).join(",")
-        )
-
-        const csvContent = [headers, ...rows].join("\n")
-
-        const blob = new Blob([csvContent], { type: "text/csv" })
-        const url = window.URL.createObjectURL(blob)
-
-        const a = document.createElement("a")
-        a.href = url
-        a.download = "report.csv"
-        a.click()
-      }
-
-      // ✅ REAL PDF EXPORT
-      if (type === "pdf") {
-        const doc = new jsPDF()
-
-        doc.setFontSize(16)
-        doc.text("Report Summary", 20, 20)
-
-        doc.setFontSize(12)
-        doc.text(`Total Records: ${uploadedData.length}`, 20, 40)
-        doc.text(
-          `Total Demand: ${uploadedData.reduce((s, d) => s + d.value, 0)}`,
-          20,
-          50
-        )
-
-        let y = 70
-        doc.text("Data:", 20, y)
-        y += 10
-
-        uploadedData.forEach((d, i) => {
-          if (y > 280) {
-            doc.addPage()
-            y = 20
-          }
-          doc.text(`${i + 1}. ${d.name} - ${d.value}`, 20, y)
-          y += 10
-        })
-
-        doc.save("report.pdf")
-      }
-
-      setGenerating(null)
-
-    }, 1000)
+  // 📄 PDF
+  const downloadPDF = () => {
+    setLoading(true)
+    window.open(
+      "http://127.0.0.1:8000/api/report/pdf",
+      "_blank"
+    )
+    setTimeout(() => setLoading(false), 2000)
   }
 
-  const totalRecords = uploadedData.length
-  const totalDemand = uploadedData.reduce((sum, d) => sum + (d.value || 0), 0)
+  // 📊 Excel
+  const downloadExcel = () => {
+    setLoading(true)
+    window.open(
+      "http://127.0.0.1:8000/api/report/excel",
+      "_blank"
+    )
+    setTimeout(() => setLoading(false), 2000)
+  }
 
   return (
-    <div style={{ flex:1, overflowY:'auto' }}>
-      <PageHeader title="Reports" subtitle="Generate, archive, and revisit your forecasts" />
+    <div style={{ flex: 1 }}>
+      <PageHeader
+        title="Reports"
+        subtitle="Generate, archive, and revisit your forecasts"
+      />
 
-      <div style={{ padding:'32px', display:'flex', flexDirection:'column', gap:'24px' }}>
-
-        {/* SUMMARY */}
-        {uploadedData.length > 0 && (
-          <div style={{
-            background:'var(--bg-card)',
-            border:'1px solid var(--border)',
-            borderRadius:'16px',
-            padding:'20px'
-          }}>
-            <p style={{ color:'var(--text-secondary)', fontSize:'14px' }}>
-              Total Records: <strong>{totalRecords}</strong>
-            </p>
-            <p style={{ color:'var(--text-secondary)', fontSize:'14px' }}>
-              Total Demand: <strong>{totalDemand}</strong>
-            </p>
-          </div>
-        )}
-
-        {/* GENERATE CARDS */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'20px' }}>
-
-          {/* PDF */}
-          <div style={{ background:'var(--bg-card)', borderRadius:'20px', padding:'28px', border:'1px solid var(--border)' }}>
-            <h3>Forecast report</h3>
-            <button
-              onClick={() => handleGenerate('pdf')}
-              disabled={generating === 'pdf'}
-            >
-              {generating === 'pdf' ? 'Generating…' : 'Generate PDF'}
-            </button>
-          </div>
-
-          {/* EXCEL */}
-          <div style={{ background:'var(--bg-card)', borderRadius:'20px', padding:'28px', border:'1px solid var(--border)' }}>
-            <h3>Inventory export</h3>
-            <button
-              onClick={() => handleGenerate('excel')}
-              disabled={generating === 'excel'}
-            >
-              {generating === 'excel' ? 'Generating…' : 'Generate Excel'}
-            </button>
-          </div>
-
+      <div
+        style={{
+          padding: "32px",
+          display: "flex",
+          flexDirection: "column",
+          gap: "24px",
+        }}
+      >
+        {/* 🔥 SUMMARY */}
+        <div
+          style={{
+            background: "var(--bg-card)",
+            borderRadius: "16px",
+            padding: "20px",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <p>Total Records: {totalRecords}</p>
+          <p>Total Demand: {totalDemand}</p>
         </div>
 
+        {/* 🔥 CARDS */}
+        <div style={{ display: "flex", gap: "20px" }}>
+          
+          {/* PDF CARD */}
+          <div
+            style={{
+              flex: 1,
+              background: "var(--bg-card)",
+              borderRadius: "16px",
+              padding: "20px",
+              border: "1px solid var(--border)",
+            }}
+          >
+            <h3>Forecast report</h3>
+            <p style={{ fontSize: "12px", color: "gray" }}>
+              Generate PDF
+            </p>
+
+            <button
+              onClick={downloadPDF}
+              disabled={loading}
+              style={{
+                marginTop: "10px",
+                padding: "8px 14px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                cursor: "pointer",
+              }}
+            >
+              Generate PDF
+            </button>
+          </div>
+
+          {/* EXCEL CARD */}
+          <div
+            style={{
+              flex: 1,
+              background: "var(--bg-card)",
+              borderRadius: "16px",
+              padding: "20px",
+              border: "1px solid var(--border)",
+            }}
+          >
+            <h3>Inventory export</h3>
+            <p style={{ fontSize: "12px", color: "gray" }}>
+              Generate Excel
+            </p>
+
+            <button
+              onClick={downloadExcel}
+              disabled={loading}
+              style={{
+                marginTop: "10px",
+                padding: "8px 14px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                cursor: "pointer",
+              }}
+            >
+              Generate Excel
+            </button>
+          </div>
+        </div>
+
+        {loading && (
+          <p style={{ color: "gray" }}>
+            Generating report...
+          </p>
+        )}
       </div>
     </div>
   )

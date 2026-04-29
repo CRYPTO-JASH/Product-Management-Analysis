@@ -12,11 +12,10 @@ import { useAuth } from "../../context/AuthContext"
 export default function Dashboard() {
   const { uploadedData, setUploadedData } = useAuth()
 
-  // 🔥 Use uploaded data if available
-  const data = uploadedData.length > 0 ? uploadedData : []
+  const data = uploadedData || []
 
-  // 🔥 Derived values
-  const totalProducts = data.length > 0 ? data.length : 24
+  // 🔥 DERIVED VALUES (PURE FRONTEND)
+  const totalProducts = data.length || 0
 
   const highestDemand =
     data.length > 0
@@ -28,12 +27,12 @@ export default function Dashboard() {
   const stockRisk =
     data.length > 0
       ? data.filter(d => d.value < 100).length
-      : 6
+      : 0
 
   return (
     <div style={{ flex:1, overflowY:'auto' }}>
 
-      {/* 🔥 HEADER */}
+      {/* HEADER */}
       <PageHeader
         title="Studio Overview"
         subtitle="Demand pulse across every shade in your catalogue"
@@ -41,154 +40,93 @@ export default function Dashboard() {
 
       <div style={{ padding:'32px' }}>
 
-        {/* 🔥 UPLOAD SECTION */}
-        <div
-          style={{
-            border: "1px dashed var(--border)",
-            borderRadius: "20px",
-            padding: "32px",
-            textAlign: "center",
-            background: "var(--bg-card)",
-            marginBottom: "28px",
-          }}
-        >
-          <p style={{ fontSize: "18px", fontWeight: "500", marginBottom: "10px" }}>
-            Upload your sales dataset
-          </p>
-
-          <p style={{
-            fontSize: "13px",
-            color: "var(--text-secondary)",
-            marginBottom: "18px"
-          }}>
+        {/* UPLOAD */}
+        <div style={{
+          border: "1px dashed var(--border)",
+          borderRadius: "20px",
+          padding: "32px",
+          textAlign: "center",
+          background: "var(--bg-card)",
+          marginBottom: "28px",
+        }}>
+          <p style={{ fontSize: 18 }}>Upload your sales dataset</p>
+          <p style={{ fontSize: 13, color: "gray" }}>
             CSV format: name, value, category, trend
           </p>
 
-          <label
-            style={{
-              padding: "10px 24px",
-              borderRadius: "50px",
-              background: "var(--terracotta)",
-              color: "#fff",
-              cursor: "pointer",
-              fontSize: "14px",
-              display: "inline-block"
+          <input
+            type="file"
+            accept=".csv"
+            onChange={(e) => {
+              const file = e.target.files[0]
+              if (!file) return
+
+              const reader = new FileReader()
+              reader.onload = (event) => {
+                const rows = event.target.result.split("\n").slice(1)
+
+                const parsed = rows
+                  .map((row) => {
+                    const [name, value, category, trend] = row.split(",")
+                    return {
+                      name,
+                      value: Number(value),
+                      category,
+                      trend,
+                    }
+                  })
+                  .filter(d => d.name)
+
+                setUploadedData(parsed)
+              }
+
+              reader.readAsText(file)
             }}
-          >
-            Choose File
-            <input
-              type="file"
-              accept=".csv"
-              onChange={(e) => {
-                const file = e.target.files[0];
-                if (!file) return;
+          />
 
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                  const text = event.target.result;
-                  const rows = text.split("\n").slice(1);
-
-                  const parsed = rows
-                    .map((row) => {
-                      const [name, value, category, trend] = row.split(",");
-                      return {
-                        name,
-                        value: Number(value),
-                        category,
-                        trend,
-                      };
-                    })
-                    .filter((d) => d.name);
-
-                  setUploadedData(parsed);
-                };
-
-                reader.readAsText(file);
-              }}
-              style={{ display: "none" }}
-            />
-          </label>
-
-          {uploadedData.length > 0 && (
-            <p style={{ marginTop: "12px", fontSize: "12px", color: "green" }}>
-              File uploaded successfully ✅
+          {data.length > 0 && (
+            <p style={{ marginTop: 10, color: "green" }}>
+              File uploaded successfully
             </p>
           )}
         </div>
 
-        {/* 🔥 KPI CARDS */}
-        <div
-          style={{
-            display:'grid',
-            gridTemplateColumns:'1fr 1fr',
-            gap:'20px',
-            marginBottom:'28px'
-          }}
-        >
-          <KPICard
-            label="Total Products"
-            value={totalProducts}
-            sub="Across 5 categories"
-            trend="+4.2% vs last quarter"
-            trendDir="up"
-            icon="⊞"
-            iconBg="var(--terracotta-bg)"
-          />
-
-          <KPICard
-            label="Highest Demand"
-            value={highestDemand ? highestDemand.name : "Terracotta Red"}
-            sub="Leading shade this month"
-            accent="#C65A3A"
-            icon="🎨"
-            iconBg="var(--terracotta-bg)"
-          />
-
-          <KPICard
-            label="Stock Risk Items"
-            value={stockRisk}
-            sub="At or below reorder line"
-            trend="-2 items vs last quarter"
-            trendDir="down"
-            icon="⚠"
-            iconBg="var(--terracotta-bg)"
-          />
-
-          <KPICard
-            label="Forecast Accuracy"
-            value="92.4%"
-            sub="Trailing 90 days"
-            trend="+1.8% vs last quarter"
-            trendDir="up"
-            icon="◎"
-            iconBg="var(--sage-bg)"
-          />
+        {/* KPI */}
+        <div style={{
+          display:'grid',
+          gridTemplateColumns:'1fr 1fr',
+          gap:'20px',
+          marginBottom:'28px'
+        }}>
+          <KPICard label="Total Products" value={totalProducts} />
+          <KPICard label="Highest Demand" value={highestDemand?.name || "-"} />
+          <KPICard label="Stock Risk Items" value={stockRisk} />
+          <KPICard label="Forecast Accuracy" value="—" />
         </div>
 
-        {/* 🔥 CHARTS ROW 1 */}
-        <div
-          style={{
-            display:'grid',
-            gridTemplateColumns:'1.6fr 1fr',
-            gap:'20px',
-            marginBottom:'28px'
-          }}
-        >
-          <DemandTrendsChart data={data} />
-          <TopPaintColors data={data} />
-        </div>
+        {/* CHARTS */}
+        {data.length > 0 && (
+          <>
+            <div style={{
+              display:'grid',
+              gridTemplateColumns:'1.6fr 1fr',
+              gap:'20px',
+              marginBottom:'28px'
+            }}>
+              <DemandTrendsChart data={data} />
+              <TopPaintColors data={data} />
+            </div>
 
-        {/* 🔥 CHARTS ROW 2 */}
-        <div
-          style={{
-            display:'grid',
-            gridTemplateColumns:'1.6fr 1fr',
-            gap:'20px'
-          }}
-        >
-          <SeasonalHeatmap data={data} />
-          <InventoryRiskChart data={data} />
-        </div>
+            <div style={{
+              display:'grid',
+              gridTemplateColumns:'1.6fr 1fr',
+              gap:'20px'
+            }}>
+              <SeasonalHeatmap data={data} />
+              <InventoryRiskChart data={data} />
+            </div>
+          </>
+        )}
 
       </div>
     </div>

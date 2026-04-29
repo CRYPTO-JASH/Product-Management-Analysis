@@ -1,6 +1,5 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import logo from "../../assets/logo.png";
 
 export default function Sidebar() {
   return (
@@ -15,7 +14,7 @@ export default function Sidebar() {
         padding: "24px",
       }}
     >
-      {/* 🔥 LOGO + BRAND */}
+      {/* 🔥 LOGO */}
       <div>
         <div
           style={{
@@ -26,11 +25,11 @@ export default function Sidebar() {
           }}
         >
           <img
-            src={logo}
+            src="/logo.png"   // ✅ THIS ALWAYS WORKS
             alt="Pigment Logo"
             style={{
-              width: "42px",
-              height: "42px",
+              width: "36px",
+              height: "36px",
               objectFit: "contain",
             }}
           />
@@ -39,6 +38,7 @@ export default function Sidebar() {
             <div style={{ fontSize: "18px", fontWeight: 600 }}>
               Pigment
             </div>
+
             <div
               style={{
                 fontSize: "10px",
@@ -51,7 +51,6 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* 🔥 NAV ITEMS */}
         {navItem("/dashboard", "Dashboard")}
         {navItem("/products", "Products")}
         {navItem("/predictions", "Demand Prediction")}
@@ -59,16 +58,31 @@ export default function Sidebar() {
         {navItem("/settings", "Settings")}
       </div>
 
-      {/* 🔥 USER SECTION */}
+      {/* USER */}
       <div style={{ fontSize: "14px" }}>
-        <p style={{ margin: 0 }}>Manager</p>
+        <p style={{ margin: 0 }}>Jash Patel</p>
         <p style={{ margin: 0, color: "#888" }}>Retailer</p>
+
+        <button
+          style={{
+            marginTop: "12px",
+            width: "100%",
+            padding: "10px",
+            borderRadius: "10px",
+            border: "none",
+            background: "var(--terracotta)",
+            color: "white",
+            fontWeight: 600,
+            cursor: "pointer",
+          }}
+        >
+          Sign Out
+        </button>
       </div>
     </div>
   );
 }
 
-/* 🔥 NAV LINK STYLE */
 function navItem(path, label) {
   return (
     <NavLink

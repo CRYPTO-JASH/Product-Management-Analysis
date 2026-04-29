@@ -1,119 +1,113 @@
-import React from 'react'
-import PageHeader from '../../components/PageHeader.jsx'
-import ProductTable from '../components/ProductTable.jsx'
-import { useAuth } from "../../context/AuthContext"
+import React, { useEffect, useState } from "react"
+import axios from "axios"
 
-// 🔥 AUTO COLOR GENERATOR
+// 🔥 COLOR GENERATOR (name → consistent color)
 function stringToColor(str) {
-  let hash = 0;
+  let hash = 0
   for (let i = 0; i < str.length; i++) {
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    hash = str.charCodeAt(i) + ((hash << 5) - hash)
   }
 
-  let color = "#";
+  let color = "#"
   for (let i = 0; i < 3; i++) {
-    const value = (hash >> (i * 8)) & 255;
-    color += ("00" + value.toString(16)).slice(-2);
+    const value = (hash >> (i * 8)) & 255
+    color += ("00" + value.toString(16)).slice(-2)
   }
 
-  return color;
+  return color
 }
 
 export default function Products() {
-  const { uploadedData } = useAuth()
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  // ✅ REMOVE BAD / EMPTY ROWS
-  const cleanedData = uploadedData.filter(item =>
-    item.name &&
-    item.name.trim() !== "" &&
-    !item.name.startsWith("#")
-  )
-
-  const products = cleanedData.map((item, i) => {
-    const value = Number(item.value) || 0
-
-    return {
-      id: i,
-      name: item.name,
-
-      // ✅ USE CSV HEX OR GENERATE
-      hex: item.hex && item.hex.startsWith('#')
-        ? item.hex
-        : stringToColor(item.name),
-
-      sku: `SKU-${i + 1}`,
-      category: item.category || "-",
-
-      value: value,
-
-      // ✅ RISK FIX
-      status: value < 100 ? 'risk' : 'ok'
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/user-shades")
+        setData(res.data)
+      } catch (err) {
+        console.error(err)
+        setError("Failed to load products")
+      } finally {
+        setLoading(false)
+      }
     }
-  })
 
-  const riskCount = products.filter(p => p.status === 'risk').length
+    fetchData()
+  }, [])
+
+  if (loading) {
+    return <div style={{ padding: "30px" }}>Loading products...</div>
+  }
+
+  if (error) {
+    return <div style={{ padding: "30px", color: "red" }}>{error}</div>
+  }
 
   return (
-    <div style={{ flex:1, overflowY:'auto' }}>
-      <PageHeader title="Products" subtitle="Manage your full colour catalogue and stock levels" />
+    <div style={{ padding: "30px" }}>
+      <h1 style={{ fontSize: "26px", marginBottom: "20px" }}>
+        Products
+      </h1>
 
-      <div style={{ padding:'32px' }}>
+      {data.length === 0 ? (
+        <p>No uploaded data found. Please upload CSV from dashboard.</p>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+            gap: "20px",
+          }}
+        >
+          {data.map((item, index) => (
+            <div
+              key={index}
+              style={{
+                border: "1px solid var(--border)",
+                borderRadius: "16px",
+                padding: "16px",
+                background: "var(--bg-card)",
+              }}
+            >
+              {/* 🎨 COLOR BOX */}
+              <div
+                style={{
+                  width: "100%",
+                  height: "80px",
+                  borderRadius: "10px",
+                  background: stringToColor(item.name || "default"),
+                  marginBottom: "10px",
+                }}
+              />
 
-        {/* TOP CARDS */}
-        <div style={{ display:'flex', gap:'16px', marginBottom:'24px' }}>
-          
-          <div style={{
-            background:'var(--bg-card)',
-            borderRadius:'14px',
-            padding:'16px 24px',
-            border:'1px solid var(--border)',
-            display:'flex',
-            gap:'12px',
-            alignItems:'center'
-          }}>
-            <span style={{ fontSize:'22px', fontWeight:700 }}>
-              {products.length}
-            </span>
-            <span style={{ fontSize:'13px', color:'var(--text-secondary)' }}>
-              Total products
-            </span>
-          </div>
+              <h3 style={{ margin: "0 0 5px 0" }}>
+                {item.name || "Unknown"}
+              </h3>
 
-          <div style={{
-            background:'var(--bg-card)',
-            borderRadius:'14px',
-            padding:'16px 24px',
-            border:'1px solid var(--border)',
-            display:'flex',
-            gap:'12px',
-            alignItems:'center'
-          }}>
-            <span style={{ fontSize:'22px', fontWeight:700, color:'var(--terracotta)' }}>
-              {riskCount}
-            </span>
-            <span style={{ fontSize:'13px', color:'var(--text-secondary)' }}>
-              At risk
-            </span>
-          </div>
+              <p style={{ fontSize: "13px", color: "gray" }}>
+                Value: {item.value}
+              </p>
+
+              <p style={{ fontSize: "12px", color: "gray" }}>
+                Category: {item.category}
+              </p>
+
+              <p
+                style={{
+                  fontSize: "12px",
+                  marginTop: "8px",
+                  color: item.trend === "up" ? "green" : "orange",
+                }}
+              >
+                {item.trend}
+              </p>
+            </div>
+          ))}
         </div>
-
-        {/* TABLE */}
-        {products.length === 0 ? (
-          <div style={{
-            background:'var(--bg-card)',
-            border:'1px solid var(--border)',
-            borderRadius:'14px',
-            padding:'24px',
-            textAlign:'center',
-            color:'var(--text-secondary)'
-          }}>
-            No data uploaded. Go to Dashboard and upload CSV.
-          </div>
-        ) : (
-          <ProductTable products={products} />
-        )}
-
-      </div>
+      )}
     </div>
   )
 }
