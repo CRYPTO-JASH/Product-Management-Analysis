@@ -1,0 +1,352 @@
+[
+  {
+    "id": 0,
+    "name": "Ocean Blue",
+    "value": 120,
+    "category": "Blue",
+    "trend": "Calm"
+  },
+  {
+    "id": 1,
+    "name": "Sky Blue",
+    "value": 60,
+    "category": "Blue",
+    "trend": "Fresh"
+  },
+  {
+    "id": 2,
+    "name": "Deep Navy",
+    "value": 200,
+    "category": "Blue",
+    "trend": "Bold"
+  },
+  {
+    "id": 3,
+    "name": "Azure Wave",
+    "value": 140,
+    "category": "Blue",
+    "trend": "Modern"
+  },
+  {
+    "id": 4,
+    "name": "Midnight Blue",
+    "value": 180,
+    "category": "Blue",
+    "trend": "Premium"
+  },
+  {
+    "id": 5,
+    "name": "Sunset Orange",
+    "value": 180,
+    "category": "Orange",
+    "trend": "Warm"
+  },
+  {
+    "id": 6,
+    "name": "Peach Glow",
+    "value": 70,
+    "category": "Orange",
+    "trend": "Soft"
+  },
+  {
+    "id": 7,
+    "name": "Burnt Sienna",
+    "value": 150,
+    "category": "Orange",
+    "trend": "Earthy"
+  },
+  {
+    "id": 8,
+    "name": "Amber Light",
+    "value": 130,
+    "category": "Orange",
+    "trend": "Glowing"
+  },
+  {
+    "id": 9,
+    "name": "Tangerine Pop",
+    "value": 160,
+    "category": "Orange",
+    "trend": "Trendy"
+  },
+  {
+    "id": 10,
+    "name": "Forest Green",
+    "value": 90,
+    "category": "Green",
+    "trend": "Nature"
+  },
+  {
+    "id": 11,
+    "name": "Mint Green",
+    "value": 130,
+    "category": "Green",
+    "trend": "Cool"
+  },
+  {
+    "id": 12,
+    "name": "Olive Shade",
+    "value": 55,
+    "category": "Green",
+    "trend": "Muted"
+  },
+  {
+    "id": 13,
+    "name": "Emerald Shine",
+    "value": 170,
+    "category": "Green",
+    "trend": "Premium"
+  },
+  {
+    "id": 14,
+    "name": "Pine Green",
+    "value": 110,
+    "category": "Green",
+    "trend": "Deep"
+  },
+  {
+    "id": 15,
+    "name": "Royal Purple",
+    "value": 170,
+    "category": "Purple",
+    "trend": "Premium"
+  },
+  {
+    "id": 16,
+    "name": "Lavender Mist",
+    "value": 80,
+    "category": "Purple",
+    "trend": "Relaxed"
+  },
+  {
+    "id": 17,
+    "name": "Plum Rich",
+    "value": 150,
+    "category": "Purple",
+    "trend": "Bold"
+  },
+  {
+    "id": 18,
+    "name": "Violet Glow",
+    "value": 140,
+    "category": "Purple",
+    "trend": "Soft"
+  },
+  {
+    "id": 19,
+    "name": "Grape Wine",
+    "value": 160,
+    "category": "Purple",
+    "trend": "Luxury"
+  },
+  {
+    "id": 20,
+    "name": "Charcoal Black",
+    "value": 220,
+    "category": "Neutral",
+    "trend": "Bold"
+  },
+  {
+    "id": 21,
+    "name": "Ivory White",
+    "value": 140,
+    "category": "Neutral",
+    "trend": "Minimal"
+  },
+  {
+    "id": 22,
+    "name": "Ash Grey",
+    "value": 65,
+    "category": "Neutral",
+    "trend": "Modern"
+  },
+  {
+    "id": 23,
+    "name": "Slate Grey",
+    "value": 100,
+    "category": "Neutral",
+    "trend": "Cool"
+  },
+  {
+    "id": 24,
+    "name": "Pearl White",
+    "value": 150,
+    "category": "Neutral",
+    "trend": "Premium"
+  },
+  {
+    "id": 25,
+    "name": "Crimson Red",
+    "value": 210,
+    "category": "Red",
+    "trend": "Hot"
+  },
+  {
+    "id": 26,
+    "name": "Cherry Red",
+    "value": 180,
+    "category": "Red",
+    "trend": "Rich"
+  },
+  {
+    "id": 27,
+    "name": "Rose Red",
+    "value": 140,
+    "category": "Red",
+    "trend": "Romantic"
+  },
+  {
+    "id": 28,
+    "name": "Brick Red",
+    "value": 120,
+    "category": "Red",
+    "trend": "Earthy"
+  },
+  {
+    "id": 29,
+    "name": "Wine Red",
+    "value": 160,
+    "category": "Red",
+    "trend": "Luxury"
+  },
+  {
+    "id": 30,
+    "name": "Rose Pink",
+    "value": 75,
+    "category": "Pink",
+    "trend": "Soft"
+  },
+  {
+    "id": 31,
+    "name": "Coral Blush",
+    "value": 160,
+    "category": "Pink",
+    "trend": "Trendy"
+  },
+  {
+    "id": 32,
+    "name": "Bubblegum Pink",
+    "value": 130,
+    "category": "Pink",
+    "trend": "Fun"
+  },
+  {
+    "id": 33,
+    "name": "Dusty Pink",
+    "value": 110,
+    "category": "Pink",
+    "trend": "Muted"
+  },
+  {
+    "id": 34,
+    "name": "Flamingo Pink",
+    "value": 150,
+    "category": "Pink",
+    "trend": "Bright"
+  },
+  {
+    "id": 35,
+    "name": "Mustard Yellow",
+    "value": 95,
+    "category": "Yellow",
+    "trend": "Vibrant"
+  },
+  {
+    "id": 36,
+    "name": "Golden Sand",
+    "value": 135,
+    "category": "Yellow",
+    "trend": "Warm"
+  },
+  {
+    "id": 37,
+    "name": "Lemon Zest",
+    "value": 120,
+    "category": "Yellow",
+    "trend": "Fresh"
+  },
+  {
+    "id": 38,
+    "name": "Sunflower",
+    "value": 160,
+    "category": "Yellow",
+    "trend": "Bright"
+  },
+  {
+    "id": 39,
+    "name": "Honey Glow",
+    "value": 140,
+    "category": "Yellow",
+    "trend": "Soft"
+  },
+  {
+    "id": 40,
+    "name": "Teal Splash",
+    "value": 185,
+    "category": "Blue-Green",
+    "trend": "Fresh"
+  },
+  {
+    "id": 41,
+    "name": "Aqua Marine",
+    "value": 150,
+    "category": "Blue-Green",
+    "trend": "Cool"
+  },
+  {
+    "id": 42,
+    "name": "Seafoam Green",
+    "value": 130,
+    "category": "Blue-Green",
+    "trend": "Soft"
+  },
+  {
+    "id": 43,
+    "name": "Turquoise Blue",
+    "value": 170,
+    "category": "Blue-Green",
+    "trend": "Vibrant"
+  },
+  {
+    "id": 44,
+    "name": "Lagoon Blue",
+    "value": 145,
+    "category": "Blue-Green",
+    "trend": "Calm"
+  },
+  {
+    "id": 45,
+    "name": "Chocolate Brown",
+    "value": 155,
+    "category": "Brown",
+    "trend": "Earthy"
+  },
+  {
+    "id": 46,
+    "name": "Walnut Brown",
+    "value": 120,
+    "category": "Brown",
+    "trend": "Deep"
+  },
+  {
+    "id": 47,
+    "name": "Caramel Cream",
+    "value": 140,
+    "category": "Brown",
+    "trend": "Soft"
+  },
+  {
+    "id": 48,
+    "name": "Mocha Blend",
+    "value": 160,
+    "category": "Brown",
+    "trend": "Rich"
+  },
+  {
+    "id": 49,
+    "name": "Sandstone Beige",
+    "value": 110,
+    "category": "Brown",
+    "trend": "Neutral"
+  }
+]
