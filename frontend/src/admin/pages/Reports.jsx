@@ -7,7 +7,6 @@ export default function Reports() {
   const [totalDemand, setTotalDemand] = useState(0)
   const [loading, setLoading] = useState(false)
 
-  // 🔥 Fetch data for summary
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -22,7 +21,9 @@ export default function Reports() {
           0
         )
 
-        setTotalDemand(demandSum)
+        // ✅ FIX: round it
+        setTotalDemand(Math.round(demandSum))
+
       } catch (err) {
         console.error("Report data error:", err)
       }
@@ -41,15 +42,8 @@ export default function Reports() {
     setTimeout(() => setLoading(false), 2000)
   }
 
-  // 📊 Excel
-  const downloadExcel = () => {
-    setLoading(true)
-    window.open(
-      "http://127.0.0.1:8000/api/report/excel",
-      "_blank"
-    )
-    setTimeout(() => setLoading(false), 2000)
-  }
+  // ❌ REMOVE EXCEL (since backend not ready)
+  // OR keep but comment for now
 
   return (
     <div style={{ flex: 1 }}>
@@ -66,7 +60,7 @@ export default function Reports() {
           gap: "24px",
         }}
       >
-        {/* 🔥 SUMMARY */}
+        {/* SUMMARY */}
         <div
           style={{
             background: "var(--bg-card)",
@@ -79,7 +73,7 @@ export default function Reports() {
           <p>Total Demand: {totalDemand}</p>
         </div>
 
-        {/* 🔥 CARDS */}
+        {/* CARDS */}
         <div style={{ display: "flex", gap: "20px" }}>
           
           {/* PDF CARD */}
@@ -112,7 +106,7 @@ export default function Reports() {
             </button>
           </div>
 
-          {/* EXCEL CARD */}
+          {/* OPTIONAL: Excel disabled */}
           <div
             style={{
               flex: 1,
@@ -120,25 +114,21 @@ export default function Reports() {
               borderRadius: "16px",
               padding: "20px",
               border: "1px solid var(--border)",
+              opacity: 0.6
             }}
           >
             <h3>Inventory export</h3>
             <p style={{ fontSize: "12px", color: "gray" }}>
-              Generate Excel
+              Coming soon
             </p>
 
-            <button
-              onClick={downloadExcel}
-              disabled={loading}
-              style={{
-                marginTop: "10px",
-                padding: "8px 14px",
-                borderRadius: "6px",
-                border: "1px solid #ccc",
-                cursor: "pointer",
-              }}
-            >
-              Generate Excel
+            <button disabled style={{
+              marginTop: "10px",
+              padding: "8px 14px",
+              borderRadius: "6px",
+              border: "1px solid #ccc"
+            }}>
+              Not Available
             </button>
           </div>
         </div>

@@ -8,9 +8,12 @@ import Products from '../admin/pages/Products.jsx'
 import Predictions from '../admin/pages/Predictions.jsx'
 import Reports from '../admin/pages/Reports.jsx'
 import Settings from '../admin/pages/Settings.jsx'
-import Shades from '../customer/pages/Shades.jsx'
+
 import Login from '../pages/Login.jsx'
 import ProtectedRoute from '../components/ProtectedRoute.jsx'
+
+// ✅ CUSTOMER APP
+import CustomerApp from "../customer/CustomerApp.jsx"
 
 export default function AppRoutes() {
   const { user } = useAuth()
@@ -18,13 +21,16 @@ export default function AppRoutes() {
   return (
     <Routes>
 
-      {/* ROOT */}
+      {/* 🔥 CUSTOMER IS DEFAULT HOME */}
+      <Route path="/*" element={<CustomerApp />} />
+
+      {/* 🔐 LOGIN */}
       <Route
-        path="/"
+        path="/login"
         element={!user ? <Login /> : <Navigate to="/dashboard" />}
       />
 
-      {/* ADMIN */}
+      {/* 🧠 ADMIN */}
       <Route element={<AdminLayout />}>
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
@@ -32,11 +38,6 @@ export default function AppRoutes() {
         <Route path="/reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
       </Route>
-
-      {/* CUSTOMER */}
-      <Route path="/customer/shades" element={<ProtectedRoute><Shades /></ProtectedRoute>} />
-
-      <Route path="*" element={<Navigate to="/" />} />
 
     </Routes>
   )

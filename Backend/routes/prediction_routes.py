@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-import requests
+import pandas as pd
 from models.arima_model import forecast_demand
 
 router = APIRouter(prefix="/api")
@@ -7,22 +7,28 @@ router = APIRouter(prefix="/api")
 @router.get("/predictions")
 def get_predictions():
 
-    # 🔥 GET DATA FROM NODE BACKEND
-    res = requests.get("http://localhost:5000/user-shades")
-    user_data = res.json()
+    df = pd.read_csv("sales_data.csv")
 
     results = []
 
-    for item in user_data:
-        sales_series = [item["value"]] * 6  # simple time series
+    colors = df["name"].unique()
 
-        forecast = forecast_demand(sales_series)
+    for color in colors:
+        color_df = df[df["name"] == color]
+
+        sales_series = color_df["sales"].tolist()
+
+        # use last 12 months
+        if len(sales_series) < 6:
+            continue
+
+        forecast = forecast_demand(sales_series[-12:])
 
         results.append({
-            "name": item["name"],
-            "predicted_demand": forecast["predicted_demand"],
+            "name": color,
+            "predicted_demand": float(forecast["predicted_demand"]),
             "trend": forecast["trend"],
-            "confidence": forecast["confidence_score"]
+            "confidence": float(forecast["confidence_score"])
         })
 
     return results

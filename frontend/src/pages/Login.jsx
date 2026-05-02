@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../services/supabaseClient'
 import logo from '../assets/logo.png'
 
-const PALETTE = ['#C65A3A','#8AA89F','#F4ECDD','#9E9189','#2E2E2E','#C99A3B','#3D6B4F','#D4A090']
+const PALETTE = ['#C65A3A','#8AA89F','#D4B483','#9E9189','#2E2E2E','#C99A3B','#3D6B4F','#D4A090']
 
 export default function Login() {
   const navigate = useNavigate()
